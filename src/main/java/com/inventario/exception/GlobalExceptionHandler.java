@@ -12,6 +12,29 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(SupermercadoAlreadyExistsExeption.class)
+  public  ResponseEntity<ErrorResponse>
+  handleSupermercadoAlreadyExistsException(SupermercadoAlreadyExistsExeption ex){
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.CONFLICT.value())
+            .error("Conflict")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+  }
+
+  @ExceptionHandler(SupermercadoNotFoundExepcion.class)
+  public  ResponseEntity<ErrorResponse>
+  handleSupermercadoAlreadyExistsException(SupermercadoNotFoundExepcion ex){
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Not Found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
   @ExceptionHandler(AdministradorNotFoundException.class)
   public ResponseEntity<ErrorResponse>
   handleAdministradorNotFound(AdministradorNotFoundException ex) {

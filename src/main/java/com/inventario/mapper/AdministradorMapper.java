@@ -1,9 +1,21 @@
 package com.inventario.mapper;
 import com.inventario.dto.*;
 import com.inventario.model.Administrador;
+import com.inventario.model.Supermercado;
 import org.springframework.stereotype.Component;
 @Component
 public class AdministradorMapper {
+
+    public SupermercadoDTO toDTO(Supermercado supermercado){
+        if(supermercado == null) return null;
+
+        return SupermercadoDTO.builder()
+                .id(supermercado.getId())
+                .correo(supermercado.getCorreo())
+                .nombre(supermercado.getNombre())
+                .fecha(supermercado.getFecha())
+                .build();
+    }
 
     public AdministradorDTO toDTO(Administrador administrador) {
         if (administrador == null) return null;
