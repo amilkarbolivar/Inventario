@@ -1,5 +1,6 @@
 package com.inventario.dto;
 
+import jakarta.validation.Valid;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
@@ -15,4 +16,8 @@ public class CreateSupermercadoDTO {
     @Email(message = "El correo debe tener un formato válido")
     @Size(max = 100, message = "El correo no puede exceder 100 caracteres")
     private String correo;
+
+    // Datos del administrador principal
+    @Valid
+    private AdministradorDtoSupermercado administrador;
 }

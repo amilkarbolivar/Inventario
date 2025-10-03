@@ -6,16 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdministradorMapper {
 
-    public SupermercadoDTO toDTO(Supermercado supermercado){
-        if(supermercado == null) return null;
-
-        return SupermercadoDTO.builder()
-                .id(supermercado.getId())
-                .correo(supermercado.getCorreo())
-                .nombre(supermercado.getNombre())
-                .fecha(supermercado.getFecha())
-                .build();
-    }
 
     public AdministradorDTO toDTO(Administrador administrador) {
         if (administrador == null) return null;
@@ -46,8 +36,7 @@ public class AdministradorMapper {
         return administrador;
     }
 
-    public void updateEntity(Administrador administrador, AdministradorUpdateDTO
-            dto) {
+    public void updateEntity(Administrador administrador, AdministradorUpdateDTO dto) {
         if (dto.getNombre() != null) {
             administrador.setNombre(dto.getNombre());
         }

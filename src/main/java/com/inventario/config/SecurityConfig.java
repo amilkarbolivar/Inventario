@@ -51,6 +51,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/supermercado/**").permitAll()
                         .requestMatchers("/api/administradores/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
