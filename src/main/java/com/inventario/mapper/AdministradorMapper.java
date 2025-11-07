@@ -1,7 +1,8 @@
 package com.inventario.mapper;
-import com.inventario.dto.*;
+import com.inventario.dto.administrador.AdministradorCreateDTO;
+import com.inventario.dto.administrador.AdministradorDTO;
+import com.inventario.dto.administrador.AdministradorUpdateDTO;
 import com.inventario.model.Administrador;
-import com.inventario.model.Supermercado;
 import org.springframework.stereotype.Component;
 @Component
 public class AdministradorMapper {

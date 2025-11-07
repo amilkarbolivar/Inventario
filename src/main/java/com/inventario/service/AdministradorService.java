@@ -1,5 +1,7 @@
 package com.inventario.service;
-import com.inventario.dto.*;
+import com.inventario.dto.administrador.AdministradorCreateDTO;
+import com.inventario.dto.administrador.AdministradorDTO;
+import com.inventario.dto.administrador.AdministradorUpdateDTO;
 import com.inventario.exception.*;
 import com.inventario.mapper.AdministradorMapper;
 import com.inventario.model.Administrador;

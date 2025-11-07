@@ -1,5 +1,5 @@
 package com.inventario.service;
-import com.inventario.dto.AuthResponseDTO;
+import com.inventario.dto.authResponse.AuthResponseDTO;
 import com.inventario.dto.LoginDTO;
 import com.inventario.exception.UnauthorizedException;
 import com.inventario.mapper.AdministradorMapper;

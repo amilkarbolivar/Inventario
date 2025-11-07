@@ -1,10 +1,8 @@
-package com.inventario.dto;
+package com.inventario.dto.supermercado;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

@@ -1,5 +1,7 @@
 package com.inventario.controllers;
-import com.inventario.dto.*;
+import com.inventario.dto.administrador.AdministradorCreateDTO;
+import com.inventario.dto.administrador.AdministradorDTO;
+import com.inventario.dto.administrador.AdministradorUpdateDTO;
 import com.inventario.service.AdministradorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

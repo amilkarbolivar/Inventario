@@ -1,5 +1,5 @@
 package com.inventario.controllers;
-import com.inventario.dto.AuthResponseDTO;
+import com.inventario.dto.authResponse.AuthResponseDTO;
 import com.inventario.dto.LoginDTO;
 import com.inventario.service.AuthService;
 import lombok.RequiredArgsConstructor;

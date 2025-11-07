@@ -1,16 +1,13 @@
 package com.inventario.controllers;
 
-import com.inventario.dto.CreateSupermercadoDTO;
-import com.inventario.dto.SupermercadoDTO;
+import com.inventario.dto.supermercado.CreateSupermercadoDTO;
+import com.inventario.dto.supermercado.SupermercadoDTO;
+import com.inventario.dto.supermercado.SupermercadoUpdateDTO;
 import com.inventario.service.SupermercadoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/supermercado")
@@ -22,6 +19,17 @@ public class SupermercadoController {
     @PostMapping("/registro")
     public ResponseEntity<SupermercadoDTO> crear(@Valid @RequestBody CreateSupermercadoDTO dto) {
         SupermercadoDTO supermercadoDTO = supermercadoService.crear(dto);
+        return ResponseEntity.ok(supermercadoDTO);
+    }
+    @GetMapping("/buscar/{id}")
+    public ResponseEntity<SupermercadoDTO> buscar (@PathVariable Long id){
+        SupermercadoDTO supermercadoDTO= supermercadoService.buscar(id);
+        return ResponseEntity.ok(supermercadoDTO);
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<SupermercadoDTO> actualizar(@Valid @RequestBody SupermercadoUpdateDTO dto ,@PathVariable Long id){
+        SupermercadoDTO supermercadoDTO =supermercadoService.actualizar(id, dto);
         return ResponseEntity.ok(supermercadoDTO);
     }
 }

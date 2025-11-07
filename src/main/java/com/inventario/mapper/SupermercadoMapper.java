@@ -1,8 +1,8 @@
 package com.inventario.mapper;
 
-import com.inventario.dto.CreateSupermercadoDTO;
-import com.inventario.dto.SupermercadoDTO;
-import com.inventario.dto.SupermercadoUpdateDTO;
+import com.inventario.dto.supermercado.CreateSupermercadoDTO;
+import com.inventario.dto.supermercado.SupermercadoDTO;
+import com.inventario.dto.supermercado.SupermercadoUpdateDTO;
 import com.inventario.model.Supermercado;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +28,14 @@ public class SupermercadoMapper {
             supermercado.setNombre(dto.getNombre());
             supermercado.setCorreo(dto.getCorreo());
             return supermercado;
+    }
+    public Supermercado toEntityupdate(SupermercadoUpdateDTO  dto){
+        if(dto == null) return null ;
+
+        Supermercado supermercado = new Supermercado();
+        supermercado.setNombre(dto.getNombre());
+        supermercado.setCorreo(dto.getCorreo());
+        return supermercado;
     }
 
     public void updateSupermercado (Supermercado supermercado, SupermercadoUpdateDTO dto){

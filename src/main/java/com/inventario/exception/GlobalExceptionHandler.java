@@ -59,6 +59,30 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
   }
 
+  @ExceptionHandler(ClienteAlreadyExistException.class)
+  public ResponseEntity<ErrorResponse>
+  handleClienteAlreadyExist(ClienteAlreadyExistException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Conflict")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(ClienteNotFoundException.class)
+  public ResponseEntity<ErrorResponse>
+  handleClienteNotFound(ClienteNotFoundException ex) {
+    ErrorResponse error =ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Not found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+  
   @ExceptionHandler(UnauthorizedException.class)
   public ResponseEntity<ErrorResponse>
   handleUnauthorized(UnauthorizedException ex) {

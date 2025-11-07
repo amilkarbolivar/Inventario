@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface SupermercadoRepository extends JpaRepository<Supermercado, Long> {
 
     Optional<Supermercado> findByNombreAndCorreo(String nombre,String correo);
-    Optional<Supermercado> findBySupermercadoId(Long id);
 }

@@ -1,4 +1,4 @@
-package com.inventario.dto;
+package com.inventario.dto.administrador;
 import lombok.*;
 import jakarta.validation.constraints.*;
 @Getter @Setter

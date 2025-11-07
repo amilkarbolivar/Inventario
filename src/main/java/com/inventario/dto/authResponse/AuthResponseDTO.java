@@ -1,4 +1,5 @@
-package com.inventario.dto;
+package com.inventario.dto.authResponse;
+import com.inventario.dto.administrador.AdministradorDTO;
 import lombok.*;
 
 @Getter @Setter

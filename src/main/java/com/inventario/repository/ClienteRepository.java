@@ -12,4 +12,6 @@ public interface ClienteRepository extends JpaRepository<Cliente,Long> {
 
     Optional<Cliente> findByCedulaAndSupermercadoId(String cedula, Long supermercadoId);
 
+
+
 }

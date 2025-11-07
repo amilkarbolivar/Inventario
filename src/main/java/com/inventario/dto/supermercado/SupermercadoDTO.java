@@ -1,4 +1,4 @@
-package com.inventario.dto;
+package com.inventario.dto.supermercado;
 
 import lombok.*;
 
