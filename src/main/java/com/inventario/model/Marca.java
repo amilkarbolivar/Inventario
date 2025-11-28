@@ -18,4 +18,5 @@ public class Marca {
     @ManyToOne
     @JoinColumn(name = "supermercado_id")
     private Supermercado supermercado;
+
 }

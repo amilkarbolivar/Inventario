@@ -15,8 +15,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String correo) throws
             UsernameNotFoundException {
-        // Nota: En un escenario real, necesitarías también el supermercadoId
-        // Para este ejemplo, asumimos que el correo es único globalmente
         Administrador administrador = administradorRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + correo));
 

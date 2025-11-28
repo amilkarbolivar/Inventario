@@ -3,6 +3,8 @@ package com.inventario.service;
 import com.inventario.dto.cliente.ClienteDTO;
 import com.inventario.dto.cliente.CreateClienteDto;
 import com.inventario.exception.AdministradorNotFoundException;
+import com.inventario.exception.ClienteNotFoundException;
+import com.inventario.exception.SupermercadoNotFoundExepcion;
 import com.inventario.mapper.ClienteMapper;
 import com.inventario.model.Cliente;
 import com.inventario.model.Supermercado;
@@ -10,7 +12,6 @@ import com.inventario.repository.ClienteRepository;
 import com.inventario.repository.SupermercadoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,5 +71,18 @@ public class ClienteService {
         return clientes.stream()
                 .map(clienteMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public void eliminar (Long ClienteId, Long SupermercadoId){
+        Supermercado supermercado =supermercadoRepository.findById(SupermercadoId)
+                .orElseThrow(()-> new SupermercadoNotFoundExepcion("supermercado no existe"));
+        Cliente cliente =clienteRepository.findById(ClienteId)
+                .orElseThrow(()-> new ClienteNotFoundException("cliente no encontrado"));
+        if(cliente.getSupermercado() != null && cliente.getSupermercado().getId().equals(supermercado.getId())){
+            clienteRepository.delete(cliente);
+        }else{
+            throw new RuntimeException("El cliente no pertenece al supermercado indicado");
+        }
+
     }
 }
