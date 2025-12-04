@@ -20,21 +20,21 @@ public class AdministradorController {
     private final AdministradorService administradorService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<AdministradorDTO> crear(@Valid @RequestBody AdministradorCreateDTO dto) {
         AdministradorDTO administrador = administradorService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(administrador);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<AdministradorDTO> obtenerPorId(@PathVariable Long id) {
         AdministradorDTO administrador = administradorService.obtenerPorId(id);
         return ResponseEntity.ok(administrador);
     }
 
     @GetMapping("/supermercado/{supermercadoId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<List<AdministradorDTO>>
     obtenerPorSupermercado(@PathVariable Long supermercadoId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -46,7 +46,7 @@ public class AdministradorController {
     }
 
     @GetMapping("/supermercado/{supermercadoId}/activos")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<List<AdministradorDTO>>
     obtenerActivosPorSupermercado(@PathVariable Long supermercadoId) {
         List<AdministradorDTO> administradores =
@@ -55,28 +55,28 @@ public class AdministradorController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<AdministradorDTO> actualizar(@PathVariable Long id, @Valid @RequestBody AdministradorUpdateDTO dto) {
         AdministradorDTO administrador = administradorService.actualizar(id, dto);
         return ResponseEntity.ok(administrador);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         administradorService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/desactivar")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<AdministradorDTO> desactivar(@PathVariable Long id) {
         AdministradorDTO administrador = administradorService.desactivar(id);
         return ResponseEntity.ok(administrador);
     }
 
     @PutMapping("/{id}/activar")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERADMIN')")
     public ResponseEntity<AdministradorDTO> activar(@PathVariable Long id) {
         AdministradorDTO administrador = administradorService.activar(id);
         return ResponseEntity.ok(administrador);

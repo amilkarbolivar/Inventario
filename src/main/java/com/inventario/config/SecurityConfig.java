@@ -52,7 +52,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/supermercado/**").permitAll()
-                        .requestMatchers("/api/administradores/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/administradores/**").hasAuthority("ROLE_SUPERADMIN")
+                        .requestMatchers("/api/proveedor/**").hasAnyAuthority("ROLE_SUPERADMIN","ROLE_ADMIN")
+                        .requestMatchers("/api/producto/**").hasAnyAuthority("ROLE_SUPERADMIN","ROLE_ADMIN")
+                        .requestMatchers("/api/cliente/**").hasAnyAuthority("ROLE_SUPERADMIN","ROLE_ADMIN")
+                        .requestMatchers("/api/categoria/**").hasAnyAuthority("ROLE_SUPERADMIN","ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

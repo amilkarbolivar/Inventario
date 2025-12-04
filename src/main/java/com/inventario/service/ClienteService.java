@@ -1,8 +1,8 @@
 package com.inventario.service;
-
 import com.inventario.dto.cliente.ClienteDTO;
 import com.inventario.dto.cliente.CreateClienteDto;
-import com.inventario.exception.AdministradorNotFoundException;
+import com.inventario.dto.cliente.UpdateClienteDto;
+import com.inventario.exception.ClienteAlreadyExistException;
 import com.inventario.exception.ClienteNotFoundException;
 import com.inventario.exception.SupermercadoNotFoundExepcion;
 import com.inventario.mapper.ClienteMapper;
@@ -10,13 +10,15 @@ import com.inventario.model.Cliente;
 import com.inventario.model.Supermercado;
 import com.inventario.repository.ClienteRepository;
 import com.inventario.repository.SupermercadoRepository;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class ClienteService {
 
@@ -24,65 +26,121 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final ClienteMapper clienteMapper;
 
-    public ClienteService(SupermercadoRepository supermercadoRepository, ClienteRepository clienteRepository, ClienteMapper clienteMapper) {
-        this.supermercadoRepository = supermercadoRepository;
-        this.clienteRepository = clienteRepository;
-        this.clienteMapper = clienteMapper;
-    }
-
     public ClienteDTO crear(CreateClienteDto dto) {
-        // 1) Validar que exista el supermercado
+        // Validar que exista el supermercado
         Supermercado supermercado = supermercadoRepository.findById(dto.getSupermercadoId())
-                .orElseThrow(() -> new AdministradorNotFoundException(
+                .orElseThrow(() -> new SupermercadoNotFoundExepcion(
                         "Supermercado con id " + dto.getSupermercadoId() + " no encontrado"));
 
-        // 2) Comprobar si ya existe un cliente con la misma cédula en ese supermercado
-        Optional<Cliente> existente = clienteRepository.findByCedulaAndSupermercadoId(dto.getCedula(), dto.getSupermercadoId());
+        // Comprobar si ya existe un cliente con la misma cédula en ese supermercado
+        Optional<Cliente> existente = clienteRepository
+                .findByCedulaAndSupermercadoId(dto.getCedula(), dto.getSupermercadoId());
+
         if (existente.isPresent()) {
-            throw new RuntimeException("Cliente con cédula " + dto.getCedula() + " ya existe en el supermercado");
+            throw new ClienteAlreadyExistException(
+                    "Cliente con cédula " + dto.getCedula() + " ya existe en el supermercado");
         }
 
-        // 3) Mapear DTO -> entidad
-        Cliente cliente = clienteMapper.toEntity(dto,supermercado);
+        // Mapear DTO -> entidad
+        Cliente cliente = clienteMapper.toEntity(dto, supermercado);
 
-
-        // 4) Guardar
+        // Guardar
         Cliente guardado = clienteRepository.save(cliente);
 
-        // 5) Mapear entidad guardada -> DTO de respuesta
+        // Mapear entidad guardada -> DTO de respuesta
         return clienteMapper.toDto(guardado);
     }
-    public ClienteDTO buscar (Long id) {
-        Cliente cliente =clienteRepository.findById(id)
-                .orElseThrow(() -> new AdministradorNotFoundException("Administrador no encontrado"));
+
+    @Transactional(readOnly = true)
+    public ClienteDTO buscar(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
 
         return clienteMapper.toDto(cliente);
     }
 
-    public List<ClienteDTO> todos_clientes(Long id) {
-        // 1️⃣ Verificar que el supermercado existe
-        Supermercado supermercado = supermercadoRepository.findById(id)
-                .orElseThrow(() -> new AdministradorNotFoundException("Supermercado no encontrado"));
+    @Transactional(readOnly = true)
+    public List<ClienteDTO> todos_clientes(Long supermercadoId) {
+        // Verificar que el supermercado existe
+        if (!supermercadoRepository.existsById(supermercadoId)) {
+            throw new SupermercadoNotFoundExepcion("Supermercado no encontrado");
+        }
 
-        // 2️⃣ Buscar todos los clientes de ese supermercado
-        List<Cliente> clientes = clienteRepository.findBySupermercadoId(id);
+        // Buscar todos los clientes de ese supermercado
+        List<Cliente> clientes = clienteRepository.findBySupermercadoId(supermercadoId);
 
-        // 3️⃣ Convertir entidades a DTOs
+        // Convertir entidades a DTOs
         return clientes.stream()
                 .map(clienteMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public void eliminar (Long ClienteId, Long SupermercadoId){
-        Supermercado supermercado =supermercadoRepository.findById(SupermercadoId)
-                .orElseThrow(()-> new SupermercadoNotFoundExepcion("supermercado no existe"));
-        Cliente cliente =clienteRepository.findById(ClienteId)
-                .orElseThrow(()-> new ClienteNotFoundException("cliente no encontrado"));
-        if(cliente.getSupermercado() != null && cliente.getSupermercado().getId().equals(supermercado.getId())){
-            clienteRepository.delete(cliente);
-        }else{
-            throw new RuntimeException("El cliente no pertenece al supermercado indicado");
+    public ClienteDTO actualizar(Long id, UpdateClienteDto dto) {
+        // Buscar el cliente existente
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
+
+        // Si se va a cambiar la cédula, verificar que no exista otra igual
+        if (!cliente.getCedula().equals(dto.getCedula())) {
+            Optional<Cliente> existente = clienteRepository
+                    .findByCedulaAndSupermercadoId(dto.getCedula(), cliente.getSupermercado().getId());
+
+            if (existente.isPresent()) {
+                throw new ClienteAlreadyExistException(
+                        "Ya existe un cliente con cédula " + dto.getCedula() + " en este supermercado");
+            }
         }
 
+        // Si se proporciona un nuevo supermercadoId, validarlo
+        Supermercado nuevoSupermercado = null;
+        if (dto.getSupermercadoId() != null) {
+            nuevoSupermercado = supermercadoRepository.findById(dto.getSupermercadoId())
+                    .orElseThrow(() -> new SupermercadoNotFoundExepcion(
+                            "Supermercado con id " + dto.getSupermercadoId() + " no encontrado"));
+        }
+
+        // Actualizar la entidad
+        clienteMapper.updateEntity(dto, cliente, nuevoSupermercado);
+
+        // Guardar cambios
+        Cliente actualizado = clienteRepository.save(cliente);
+
+        return clienteMapper.toDto(actualizado);
+    }
+
+    public void eliminar(Long clienteId, Long supermercadoId) {
+        // Verificar que el supermercado existe
+        Supermercado supermercado = supermercadoRepository.findById(supermercadoId)
+                .orElseThrow(() -> new SupermercadoNotFoundExepcion("Supermercado no existe"));
+
+        // Verificar que el cliente existe
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
+
+        // Verificar que el cliente pertenece al supermercado
+        if (cliente.getSupermercado() == null ||
+                !cliente.getSupermercado().getId().equals(supermercado.getId())) {
+            throw new ClienteNotFoundException(
+                    "El cliente no pertenece al supermercado indicado");
+        }
+
+        // Eliminar el cliente
+        clienteRepository.delete(cliente);
+    }
+
+    @Transactional(readOnly = true)
+    public ClienteDTO buscarPorCedula(String cedula, Long supermercadoId) {
+        // Verificar que el supermercado existe
+        if (!supermercadoRepository.existsById(supermercadoId)) {
+            throw new SupermercadoNotFoundExepcion("Supermercado no encontrado");
+        }
+
+        // Buscar cliente por cédula y supermercado
+        Cliente cliente = clienteRepository
+                .findByCedulaAndSupermercadoId(cedula, supermercadoId)
+                .orElseThrow(() -> new ClienteNotFoundException(
+                        "Cliente con cédula " + cedula + " no encontrado en este supermercado"));
+
+        return clienteMapper.toDto(cliente);
     }
 }

@@ -12,6 +12,113 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(VentaNotFoundException.class)
+  public ResponseEntity<ErrorResponse>
+  handleVentaNotFound(VentaNotFoundException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Not Found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(InsufficientStockException.class)
+  public ResponseEntity<ErrorResponse>
+  handleInsufficientStock(InsufficientStockException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.BAD_REQUEST.value())
+            .error("Bad Request")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+  }
+
+  @ExceptionHandler(CompraNotFoundException.class)
+  public ResponseEntity<ErrorResponse>
+  handleCompraNotFound(CompraNotFoundException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Not Found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(ProductoNotFoundException.class)
+  public ResponseEntity<ErrorResponse>
+  handleProductoNotFound(ProductoNotFoundException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Not Found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(CategoriaNotFoundException.class)
+  public ResponseEntity<ErrorResponse>
+  handleCategoriaNotFound(CategoriaNotFoundException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.NOT_FOUND.value())
+            .error("Not Found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  @ExceptionHandler(CategoriaAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse>
+  handleCategoriaAlreadyExists(CategoriaAlreadyExistsException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.CONFLICT.value())
+            .error("Conflict")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+  }
+  @ExceptionHandler(ProductoAlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse>
+  handleProductoAlreadyExists(ProductoAlreadyExistsException ex) {
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.CONFLICT.value())
+            .error("Conflict")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+  }
+
+  @ExceptionHandler(ProveedorAlreadyExistsException.class)
+  public  ResponseEntity<ErrorResponse>
+  handleProveedorAlreadyExistsException(ProveedorAlreadyExistsException ex){
+    ErrorResponse error = ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.CONFLICT.value())
+            .error("Conflict")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+  }
+
+  @ExceptionHandler(ProveedorNotFoundException.class)
+  public ResponseEntity<ErrorResponse>
+  handleProveedorNotFoundExeption(ProveedorNotFoundException ex){
+    ErrorResponse error =ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .status(HttpStatus.CONFLICT.value())
+            .error("Not found")
+            .message(ex.getMessage())
+            .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
   @ExceptionHandler(SupermercadoAlreadyExistsExeption.class)
   public  ResponseEntity<ErrorResponse>
   handleSupermercadoAlreadyExistsException(SupermercadoAlreadyExistsExeption ex){
