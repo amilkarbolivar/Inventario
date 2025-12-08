@@ -45,6 +45,11 @@ public class Producto {
 
     private Boolean activo;
 
+    @PrePersist
+    protected void onCreate() {
+        this.creadoEn = LocalDateTime.now();
+    }
+
     @Column(name = "creado_en", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime creadoEn;
 

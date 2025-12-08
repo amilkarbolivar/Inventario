@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Builder
 public class DetalleCompraDTO {
     private Long id;
+    private Long compraId;
     private Long productoId;
     private String productoNombre;
     private Integer cantidad;

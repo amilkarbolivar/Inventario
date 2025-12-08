@@ -8,5 +8,4 @@ import java.util.List;
 
 public interface MedidasRepository extends JpaRepository<Medida,Long> {
 
-    List<Medida> findBySupermercadoId(Long supermercadoId);
 }

@@ -1,4 +1,4 @@
-package com.inventario.dto.compra;
+package com.inventario.dto.detallecompra;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -13,6 +13,7 @@ public class DetalleCompraCreateDTO {
 
     @NotNull(message = "El producto es obligatorio")
     private Long productoId;
+
 
     @NotNull(message = "La cantidad es obligatoria")
     @Min(value = 1, message = "La cantidad debe ser al menos 1")

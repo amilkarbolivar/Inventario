@@ -1,5 +1,6 @@
 package com.inventario.dto.venta;
 
+import com.inventario.model.Detalle_venta;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,4 +28,5 @@ public class VentaDTO {
 
     private Long tipoPagoId;
     private String tipoPagoNombre;
+    private List<DetalleVentaDTO> detalles;
 }

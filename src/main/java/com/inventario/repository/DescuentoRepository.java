@@ -29,6 +29,10 @@ public interface DescuentoRepository extends JpaRepository<Descuento, Long> {
             LocalDate hoy1,
             LocalDate hoy2
     );
-
+    Optional<Descuento> findTopByProductoIdAndActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
+            Long productoId,
+            LocalDate fechaInicio,
+            LocalDate fechaFin
+    );
 }
 

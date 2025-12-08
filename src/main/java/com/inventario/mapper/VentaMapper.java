@@ -3,6 +3,7 @@ package com.inventario.mapper;
 import com.inventario.dto.cliente.CreateClienteDto;
 import com.inventario.dto.venta.VentaCreateDTO;
 import com.inventario.dto.venta.VentaDTO;
+
 import com.inventario.dto.detalleventa.DetalleVentaDTO;
 import com.inventario.model.*;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,11 @@ import java.util.stream.Collectors;
 
 @Component
 public class VentaMapper {
+    private final Detalle_ventaMapper ventamapper;
+
+    public VentaMapper(Detalle_ventaMapper detalleVenta) {
+        ventamapper = detalleVenta;
+    }
 
     public VentaDTO toDTO(Venta venta) {
         if (venta == null) return null;
@@ -36,46 +42,30 @@ public class VentaMapper {
                         venta.getTipoPago().getId() : null)
                 .tipoPagoNombre(venta.getTipoPago() != null ?
                         venta.getTipoPago().getNombre() : null)
+                .detalles(
+                        venta.getDetalles().stream()
+                                .map(ventamapper::toDTO)
+                                .collect(Collectors.toList())
+                )
                 .build();
     }
 
-    public Venta toEntity(VentaCreateDTO dto) {
+    public Venta toEntity(VentaCreateDTO dto,
+                          Administrador administrador,
+                          Cliente cliente,
+                          Supermercado supermercado,
+                          Tipo_pago tipoPago) {
 
         if (dto == null) return null;
 
         Venta venta = new Venta();
         venta.setTotal(dto.getTotal());
 
-        // Fecha la debes generar más arriba en el servicio
-        // venta.setFecha(LocalDateTime.now());
-
-        // ====== ADMINISTRADOR ======
-        if (dto.getAdministradorId() != null) {
-            Administrador admin = new Administrador();
-            admin.setId(dto.getAdministradorId());
-            venta.setAdministrador(admin);
-        }
-
-        // ====== CLIENTE ======
-        if (dto.getClienteId() != null) {
-            Cliente cliente = new Cliente();
-            cliente.setId(dto.getClienteId());
-            venta.setCliente(cliente);
-        }
-
-        // ====== SUPERMERCADO ======
-        if (dto.getSupermercadoId() != null) {
-            Supermercado supermercado = new Supermercado();
-            supermercado.setId(dto.getSupermercadoId());
-            venta.setSupermercado(supermercado);
-        }
-
-        // ====== TIPO DE PAGO ======
-        if (dto.getTipoPagoId() != null) {
-            Tipo_pago tipoPago = new Tipo_pago();
-            tipoPago.setId(dto.getTipoPagoId());
-            venta.setTipoPago(tipoPago);
-        }
+        // Relaciones REALES (no entidades fantasmas)
+        venta.setAdministrador(administrador);
+        venta.setCliente(cliente);
+        venta.setSupermercado(supermercado);
+        venta.setTipoPago(tipoPago);
 
         return venta;
     }

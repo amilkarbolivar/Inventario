@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface Descuentos_categoriaRepository extends JpaRepository<Descuento_categoria,Long> {
 
@@ -19,5 +20,10 @@ public interface Descuentos_categoriaRepository extends JpaRepository<Descuento_
             Long supermercadoId,
             LocalDate hoy1,
             LocalDate hoy2
+    );
+    Optional<Descuento_categoria> findTopByCategoriaIdAndActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
+            Long categoriaId,
+            LocalDate fechaInicio,
+            LocalDate fechaFin
     );
 }

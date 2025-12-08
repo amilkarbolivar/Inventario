@@ -25,21 +25,4 @@ public class CreateClienteDto {
     @NotNull
     private Long supermercadoId;
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UpdateClienteDto {
-
-        @NotBlank
-        @Size(max = 50)
-        private String documentoTipo;
-
-        @NotBlank
-        @Size(max = 25)
-        private String cedula;
-
-        // supermercadoId puede ser opcional en actualización; si es null, no se cambia
-        private Long supermercadoId;
-    }
 }

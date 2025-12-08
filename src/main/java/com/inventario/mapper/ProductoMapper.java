@@ -3,11 +3,15 @@ package com.inventario.mapper;
 import com.inventario.dto.producto.ProductoCreateDTO;
 import com.inventario.dto.producto.ProductoDTO;
 import com.inventario.dto.producto.ProductoUpdateDTO;
-import com.inventario.model.Producto;
+import com.inventario.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductoMapper {
+
+    // ----------------------------
+    //       ENTITY → DTO
+    // ----------------------------
 
     public ProductoDTO toDTO(Producto producto) {
         if (producto == null) return null;
@@ -20,20 +24,36 @@ public class ProductoMapper {
                 .codigoBarra(producto.getCodigoBarra())
                 .activo(producto.getActivo())
                 .creadoEn(producto.getCreadoEn())
+
                 .categoriaId(producto.getCategoria() != null ? producto.getCategoria().getId() : null)
                 .categoriaNombre(producto.getCategoria() != null ? producto.getCategoria().getNombre() : null)
+
                 .marcaId(producto.getMarca() != null ? producto.getMarca().getId() : null)
                 .marcaNombre(producto.getMarca() != null ? producto.getMarca().getNombre() : null)
+
                 .medidaId(producto.getMedida() != null ? producto.getMedida().getId() : null)
                 .medidaUnidad(producto.getMedida() != null ? producto.getMedida().getUnidad() : null)
+
                 .provedorId(producto.getProvedor() != null ? producto.getProvedor().getId() : null)
                 .provedorNombre(producto.getProvedor() != null ? producto.getProvedor().getNombre() : null)
+
                 .supermercadoId(producto.getSupermercado() != null ? producto.getSupermercado().getId() : null)
                 .supermercadoNombre(producto.getSupermercado() != null ? producto.getSupermercado().getNombre() : null)
                 .build();
     }
 
-    public Producto toEntity(ProductoCreateDTO dto) {
+
+    // ----------------------------
+    //   CREATE DTO → ENTITY
+    // ----------------------------
+    public Producto toEntity(
+            ProductoCreateDTO dto,
+            Categoria categoria,
+            Marca marca,
+            Medida medida,
+            Provedor provedor,
+            Supermercado supermercado
+    ) {
         if (dto == null) return null;
 
         Producto producto = new Producto();
@@ -42,24 +62,43 @@ public class ProductoMapper {
         producto.setStock(dto.getStock());
         producto.setCodigoBarra(dto.getCodigoBarra());
         producto.setActivo(true);
+
+        // Relaciones ya resueltas por el servicio
+        producto.setCategoria(categoria);
+        producto.setMarca(marca);
+        producto.setMedida(medida);
+        producto.setProvedor(provedor);
+        producto.setSupermercado(supermercado);
+
         return producto;
     }
 
-    public void updateEntity(Producto producto, ProductoUpdateDTO dto) {
-        if (dto.getNombre() != null) {
-            producto.setNombre(dto.getNombre());
-        }
-        if (dto.getPrecio() != null) {
-            producto.setPrecio(dto.getPrecio());
-        }
-        if (dto.getStock() != null) {
-            producto.setStock(dto.getStock());
-        }
-        if (dto.getCodigoBarra() != null) {
-            producto.setCodigoBarra(dto.getCodigoBarra());
-        }
-        if (dto.getActivo() != null) {
-            producto.setActivo(dto.getActivo());
-        }
+
+    // ----------------------------
+    //    UPDATE DTO → ENTITY
+    // ----------------------------
+
+    public void updateEntity(
+            Producto producto,
+            ProductoUpdateDTO dto,
+            Categoria categoria,
+            Marca marca,
+            Medida medida,
+            Provedor provedor,
+            Supermercado supermercado
+    ) {
+
+        if (dto.getNombre() != null) producto.setNombre(dto.getNombre());
+        if (dto.getPrecio() != null) producto.setPrecio(dto.getPrecio());
+        if (dto.getStock() != null) producto.setStock(dto.getStock());
+        if (dto.getCodigoBarra() != null) producto.setCodigoBarra(dto.getCodigoBarra());
+        if (dto.getActivo() != null) producto.setActivo(dto.getActivo());
+
+        // Actualizar relaciones si vienen
+        if (categoria != null) producto.setCategoria(categoria);
+        if (marca != null) producto.setMarca(marca);
+        if (medida != null) producto.setMedida(medida);
+        if (provedor != null) producto.setProvedor(provedor);
+        if (supermercado != null) producto.setSupermercado(supermercado);
     }
 }

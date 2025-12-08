@@ -2,7 +2,10 @@ package com.inventario.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -32,10 +35,15 @@ public class Compra {
     @JoinColumn(name = "tipo_pago_id",nullable = false)
     private Tipo_pago tipo_pago;
 
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal total = BigDecimal.ZERO;
+
     @PrePersist
     public void setFecha() {
         if (fecha == null) {
             this.fecha = LocalDateTime.now();
         }
     }
+    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Detalle_compra> detalles = new ArrayList<>();
 }

@@ -30,10 +30,5 @@ public class Detalle_venta {
     @Column(precision = 10, scale = 2)
     private BigDecimal subtotal;
 
-    @PrePersist
-    public void calcularSubtotal() {
-        if (cantidad != null && precioDetalle != null) {
-            this.subtotal = precioDetalle.multiply(BigDecimal.valueOf(cantidad));
-        }
-    }
+
 }

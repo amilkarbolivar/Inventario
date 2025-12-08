@@ -2,6 +2,8 @@ package com.inventario.dto.compra;
 
 import com.inventario.dto.detallecompra.DetalleCompraDTO;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,5 +28,6 @@ public class CompraDTO {
     private Long tipoPagoId;
     private String tipoPagoNombre;
 
-    private List<DetalleCompraDTO> detalles;
+    private BigDecimal total;
+    private List<DetalleCompraDTO> detalle;
 }

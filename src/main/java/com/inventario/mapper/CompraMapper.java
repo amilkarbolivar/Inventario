@@ -1,10 +1,10 @@
 package com.inventario.mapper;
 
+import com.inventario.dto.compra.CompraCreateDTO;
 import com.inventario.dto.compra.CompraDTO;
 
-import com.inventario.dto.detallecompra.DetalleCompraDTO;
-import com.inventario.model.Compra;
-import com.inventario.model.Detalle_compra;
+
+import com.inventario.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,8 +12,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class CompraMapper {
+            private final Detalle_compraMapper compramapper;
 
-    public CompraDTO toDTO(Compra compra, List<Detalle_compra> detalles) {
+    public CompraMapper(Detalle_compraMapper compramapper) {
+        this.compramapper = compramapper;
+    }
+
+    public CompraDTO toDTO(Compra compra) {
         if (compra == null) return null;
 
         return CompraDTO.builder()
@@ -35,23 +40,28 @@ public class CompraMapper {
                         compra.getTipo_pago().getId() : null)
                 .tipoPagoNombre(compra.getTipo_pago() != null ?
                         compra.getTipo_pago().getNombre() : null)
-                .detalles(detalles != null ?
-                        detalles.stream().map(this::toDetalleDTO).collect(Collectors.toList()) : null)
+                .detalle(
+                        compra.getDetalles().stream()
+                                .map(compramapper::toDO)
+                                .collect(Collectors.toList())
+                )
                 .build();
     }
 
-    public DetalleCompraDTO toDetalleDTO(Detalle_compra detalle) {
-        if (detalle == null) return null;
+    public Compra toEntity(CompraCreateDTO dto,
+                           Administrador admin,
+                           Provedor provedor,
+                           Supermercado supermercado,
+                           Tipo_pago tipoPago) {
 
-        return DetalleCompraDTO.builder()
-                .id(detalle.getId())
-                .productoId(detalle.getProducto() != null ?
-                        detalle.getProducto().getId() : null)
-                .productoNombre(detalle.getProducto() != null ?
-                        detalle.getProducto().getNombre() : null)
-                .cantidad(detalle.getCantidad())
-                .precioUnitario(detalle.getPrecioUnitario())
-                .subtotal(detalle.getSubtotal())
-                .build();
+        Compra compra = new Compra();
+        compra.setTotal(dto.getTotal());
+        compra.setAdministrador(admin);
+        compra.setProvedor(provedor);
+        compra.setSupermercado(supermercado);
+        compra.setTipo_pago(tipoPago);
+
+        return compra;
     }
+
 }

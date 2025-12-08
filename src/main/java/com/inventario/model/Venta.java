@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -43,5 +45,7 @@ public class Venta {
             this.fecha = LocalDateTime.now();
         }
     }
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Detalle_venta> detalles = new ArrayList<>();
 
 }

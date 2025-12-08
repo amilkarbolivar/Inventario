@@ -28,4 +28,5 @@ public class VentaCreateDTO {
 
    @NotNull(message = "el total es obligatorio")
     private BigDecimal total;
+    private List<DetalleVentaCreateDTO> detalles;
 }
