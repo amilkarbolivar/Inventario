@@ -18,15 +18,13 @@ public class VentaCreateDTO {
     @NotNull(message = "El administrador es obligatorio")
     private Long administradorId;
 
-    private Long clienteId; // Opcional para ventas sin cliente registrado
-
+    private Long clienteId;
     @NotNull(message = "El supermercado es obligatorio")
     private Long supermercadoId;
 
     @NotNull(message = "El tipo de pago es obligatorio")
     private Long tipoPagoId;
 
-   @NotNull(message = "el total es obligatorio")
-    private BigDecimal total;
+
     private List<DetalleVentaCreateDTO> detalles;
 }

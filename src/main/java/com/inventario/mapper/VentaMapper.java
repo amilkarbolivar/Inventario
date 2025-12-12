@@ -59,7 +59,6 @@ public class VentaMapper {
         if (dto == null) return null;
 
         Venta venta = new Venta();
-        venta.setTotal(dto.getTotal());
 
         // Relaciones REALES (no entidades fantasmas)
         venta.setAdministrador(administrador);

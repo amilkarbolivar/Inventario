@@ -40,6 +40,7 @@ public class CompraMapper {
                         compra.getTipo_pago().getId() : null)
                 .tipoPagoNombre(compra.getTipo_pago() != null ?
                         compra.getTipo_pago().getNombre() : null)
+                .total(compra.getTotal())
                 .detalle(
                         compra.getDetalles().stream()
                                 .map(compramapper::toDO)
@@ -55,7 +56,6 @@ public class CompraMapper {
                            Tipo_pago tipoPago) {
 
         Compra compra = new Compra();
-        compra.setTotal(dto.getTotal());
         compra.setAdministrador(admin);
         compra.setProvedor(provedor);
         compra.setSupermercado(supermercado);

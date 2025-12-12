@@ -24,7 +24,7 @@ public class Compra {
     private Administrador administrador;
 
     @ManyToOne
-    @JoinColumn(name = "proveedor_id",nullable = false)
+    @JoinColumn(name = "provedor_id",nullable = false)
     private Provedor provedor;
 
     @ManyToOne

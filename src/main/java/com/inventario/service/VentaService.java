@@ -40,132 +40,85 @@ public class VentaService {
     private final Tipos_movRepository tipos;
     private final MovimientoRepository movimiento;
 
+
     @Transactional
     public VentaDTO crear(VentaCreateDTO dto) {
 
-        // ===== VALIDAR SUPERMERCADO =====
+        // ===== VALIDAR ENTIDADES =====
         Supermercado supermercado = supermercadoRepository.findById(dto.getSupermercadoId())
                 .orElseThrow(() -> new SupermercadoNotFoundExepcion("Supermercado no encontrado"));
 
-        // ===== VALIDAR ADMINISTRADOR =====
         Administrador administrador = administradorRepository.findById(dto.getAdministradorId())
                 .orElseThrow(() -> new AdministradorNotFoundException("Administrador no encontrado"));
 
-        if (!administrador.getSupermercado().getId().equals(dto.getSupermercadoId())) {
-            throw new AdministradorNotFoundException("El administrador no pertenece al supermercado");
-        }
-
-        // ===== VALIDAR CLIENTE (opcional) =====
         Cliente cliente = null;
         if (dto.getClienteId() != null) {
             cliente = clienteRepository.findById(dto.getClienteId())
                     .orElseThrow(() -> new ClienteNotFoundException("Cliente no encontrado"));
-
-            if (!cliente.getSupermercado().getId().equals(dto.getSupermercadoId())) {
-                throw new ClienteNotFoundException("El cliente no pertenece al supermercado");
-            }
         }
 
-        // ===== VALIDAR TIPO DE PAGO =====
         Tipo_pago tipoPago = tipoPagoRepository.findById(dto.getTipoPagoId())
                 .orElseThrow(() -> new VentaNotFoundException("Tipo de pago no encontrado"));
 
-        // ===== CREAR VENTA PADRE =====
+        // ===== CREAR VENTA =====
         Venta venta = new Venta();
         venta.setAdministrador(administrador);
         venta.setCliente(cliente);
         venta.setSupermercado(supermercado);
         venta.setTipoPago(tipoPago);
-        venta.setFecha(LocalDateTime.now());
         venta.setTotal(BigDecimal.ZERO);
 
         BigDecimal totalVenta = BigDecimal.ZERO;
 
-        // ===== PROCESAR DETALLES =====
+        // ===== CREAR DETALLES =====
         for (DetalleVentaCreateDTO deto : dto.getDetalles()) {
 
-            // 1. Validar producto
             Producto producto = productoRepository.findById(deto.getProductoId())
                     .orElseThrow(() -> new ProductoNotFoundException("Producto no encontrado"));
 
-            LocalDate hoy = LocalDate.now();
+            Detalle_venta detalle = new Detalle_venta();
+            detalle.setProducto(producto);
+            detalle.setCantidad(deto.getCantidad());
+            detalle.setPrecioDetalle(producto.getPrecio());
+            detalle.setSubtotal(deto.getPrecioDetalle().multiply(BigDecimal.valueOf(deto.getCantidad())));
+            detalle.setVenta(venta);
 
-            Movimientos mov = new Movimientos();
-            mov.setProducto(producto);
-            Tipos_mov tipoMov = tipos.findByNombre("SALIDA")
-                    .orElseThrow(() -> new RuntimeException("Tipo de movimiento SALIDA no existe"));
-
-
-            mov.setMotivo("venta");
-            mov.setTipoMov(tipoMov);
-
-            mov.setCantidad(deto.getCantidad());
-            mov.setAdministrador(administrador);
-            mov.setSupermercado(supermercado);
-
-            movimiento.save(mov);
-            // 2. Buscar descuentos activos
-            BigDecimal descuentoProducto = descuentoRepository
-                    .findTopByProductoIdAndActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
-                            producto.getId(), hoy, hoy
-                    )
-                    .map(Descuento::getPorcentaje)
-                    .orElse(BigDecimal.ZERO);
-
-            BigDecimal descuentoCategoria = categoriadescuentos
-                    .findTopByCategoriaIdAndActivoTrueAndFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(
-                            producto.getCategoria().getId(), hoy, hoy
-                    )
-                    .map(Descuento_categoria::getPorcentaje)
-                    .orElse(BigDecimal.ZERO);
-
-            BigDecimal precioFinal = producto.getPrecio();
-
-            // 3. Aplicar descuento por producto
-            if (descuentoProducto.compareTo(BigDecimal.ZERO) > 0) {
-                precioFinal = precioFinal.subtract(
-                        precioFinal.multiply(descuentoProducto).divide(BigDecimal.valueOf(100))
-                );
-            }
-
-            // 4. Aplicar descuento por categoría
-            if (descuentoCategoria.compareTo(BigDecimal.ZERO) > 0) {
-                precioFinal = precioFinal.subtract(
-                        precioFinal.multiply(descuentoCategoria).divide(BigDecimal.valueOf(100))
-                );
-            }
-
-            // 5. Actualizar stock
-            producto.setStock(producto.getStock() - deto.getCantidad());
-            productoRepository.save(producto);
-
-            // 6. Crear detalle
-            Detalle_venta detalle = detalleVentaMapper.toEntity(deto, producto, venta);
-
-            // Guardar precio final con descuentos
-            detalle.setPrecioDetalle(precioFinal);
-
-            // 7. Subtotal
-            BigDecimal subtotal = precioFinal.multiply(BigDecimal.valueOf(deto.getCantidad()));
-            detalle.setSubtotal(subtotal);
-
-            // 8. Agregar detalle
             venta.getDetalles().add(detalle);
 
-            // 9. Sumar total
-            totalVenta = totalVenta.add(subtotal);
+            totalVenta = totalVenta.add(detalle.getSubtotal());
         }
 
-
-        // ===== ACTUALIZAR TOTAL DE LA VENTA =====
+        // ===== GUARDAR VENTA =====
         venta.setTotal(totalVenta);
-
-        // ===== GUARDAR VENTA COMPLETA =====
+        registrarMovimiento(venta);
         Venta savedVenta = ventaRepository.save(venta);
-
 
         return mapper.toDTO(savedVenta);
     }
+    // Servicio para manejar movimientos
+    @Transactional
+    public void registrarMovimiento(Venta venta) {
+        for (Detalle_venta detalle : venta.getDetalles()) {
+            Producto producto = detalle.getProducto();
+
+            Movimientos mov = new Movimientos();
+
+            mov.setProducto(producto);
+            mov.setCantidad(detalle.getCantidad());
+            mov.setAdministrador(venta.getAdministrador());
+            mov.setSupermercado(venta.getSupermercado());
+            mov.setTipoMov(tipos.findById(1L).orElseThrow());
+            mov.setMotivo("venta");
+
+
+            movimiento.save(mov);
+
+            // Actualizar stock
+            producto.setStock(producto.getStock() - detalle.getCantidad());
+            productoRepository.save(producto);
+        }
+    }
+
 
 
 

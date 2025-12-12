@@ -73,9 +73,9 @@ public class ProductoService {
         if (!provedor.getSupermercado().getId().equals(supermercado.getId()))
             throw new ProductoNotFoundException("El proveedor no pertenece al supermercado");
 
-        // Ahora sí usar el mapper como DIOS manda
+
         Producto producto = mapper.toEntity(dto, categoria, marca, medida, provedor, supermercado);
-        producto.setCreadoEn(LocalDateTime.now());
+
 
         return mapper.toDTO(productoRepository.save(producto));
     }
@@ -142,14 +142,18 @@ public class ProductoService {
         Marca marca = null;
         Medida medida = null;
         Provedor provedor = null;
-
+       Supermercado nuevoSupermercado = null;
         if (dto.getCategoriaId() != null) {
             categoria = obtenerCategoria(dto.getCategoriaId());
             if (!categoria.getSupermercado().getId().equals(producto.getSupermercado().getId()))
                 throw new ProductoNotFoundException("La categoría no pertenece al supermercado del producto");
         }
 
-        if (dto.getMarcaId() != null) {
+        if (dto.getSupermercadoId() != null) {
+             nuevoSupermercado = obtenerSupermercado(dto.getSupermercadoId());
+        }
+
+            if (dto.getMarcaId() != null) {
             marca = obtenerMarca(dto.getMarcaId());
             if (!marca.getSupermercado().getId().equals(producto.getSupermercado().getId()))
                 throw new ProductoNotFoundException("La marca no pertenece al supermercado del producto");
@@ -165,7 +169,7 @@ public class ProductoService {
         }
 
         // mapper PRO
-        mapper.updateEntity(producto, dto, categoria, marca, medida, provedor, null);
+        mapper.updateEntity(producto, dto, categoria, marca, medida, provedor,nuevoSupermercado);
 
         return mapper.toDTO(productoRepository.save(producto));
     }

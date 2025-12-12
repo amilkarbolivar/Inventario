@@ -196,7 +196,7 @@ public class GlobalExceptionHandler {
     ErrorResponse error = ErrorResponse.builder()
             .timestamp(LocalDateTime.now())
             .status(HttpStatus.UNAUTHORIZED.value())
-            .error("Unauthorized")
+            .error("Unauthorized3333333333")
             .message(ex.getMessage())
             .build();
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);

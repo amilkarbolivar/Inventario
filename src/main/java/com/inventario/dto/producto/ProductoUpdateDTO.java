@@ -33,4 +33,6 @@ public class ProductoUpdateDTO {
     private Long provedorId;
 
     private Boolean activo;
+
+    private Long supermercadoId;
 }

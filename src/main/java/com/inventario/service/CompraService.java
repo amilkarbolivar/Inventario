@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.inventario.mapper.Detalle_compraMapper;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,8 +62,14 @@ public class CompraService {
                 .orElseThrow(() -> new CompraNotFoundException("Tipo de pago no encontrado"));
 
         // ===== CREAR COMPRA =====
-        Compra compra = mapper.toEntity(dto, administrador, provedor, supermercado, tipoPago);
+        Compra compra = new Compra();
+        compra.setSupermercado(supermercado);
+        compra.setAdministrador(administrador);
+        compra.setProvedor(provedor);
+        compra.setTipo_pago(tipoPago);
+        compra.setTotal(BigDecimal.ZERO);
 
+        BigDecimal totalCompra = BigDecimal.ZERO;
         // ===== PROCESAR DETALLES =====
         for (DetalleCompraCreateDTO deto : dto.getDetalles()) {
 
@@ -72,29 +79,22 @@ public class CompraService {
             producto.setStock(producto.getStock() + deto.getCantidad());
             productoRepository.save(producto);
 
-            Movimientos mov = new Movimientos();
-            mov.setProducto(producto);
-            Tipos_mov tipoMov = tipos.findByNombre("ENTRADA")
-                    .orElseThrow(() -> new RuntimeException("Tipo de movimiento SALIDA no existe"));
-
-
-            mov.setMotivo("venta");
-            mov.setTipoMov(tipoMov);
-
-            mov.setCantidad(deto.getCantidad());
-            mov.setAdministrador(administrador);
-            mov.setSupermercado(supermercado);
-
-            movimiento.save(mov);
 
             // ---- Mapear usando ENTIDADES REALES ----
-            Detalle_compra detalle = detalleCompraMapper.toEntity(deto,compra,producto);
+            Detalle_compra detalle = new Detalle_compra();
+            detalle.setCompra(compra);
+            detalle.setProducto(producto);
+            detalle.setSubtotal(deto.getPrecioUnitario().multiply(BigDecimal.valueOf(deto.getCantidad())));
+            detalle.setCantidad(deto.getCantidad());
+            detalle.setPrecioUnitario(deto.getPrecioUnitario());
 
             // ---- Agregar detalle a la compra ----
+            totalCompra = totalCompra.add(detalle.getSubtotal());
             compra.getDetalles().add(detalle);
         }
 
         // 🚀 Gracias a CascadeType.ALL, esto guarda compra + detalles
+        compra.setTotal(totalCompra);
         Compra saved = compraRepository.save(compra);
 
         return mapper.toDTO(saved);

@@ -28,7 +28,5 @@ public class CompraCreateDTO {
     @NotNull(message = "El tipo de pago es obligatorio")
     private Long tipoPagoId;
 
-    @NotNull(message = "debe haber un total")
-    private BigDecimal total;
     private List<DetalleCompraCreateDTO> detalles;
 }
