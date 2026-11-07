@@ -24,7 +24,6 @@ public class AdministradorDtoSupermercado {
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 
-    @NotBlank(message = "El rol es obligatorio")
     @Size(max = 50, message = "El rol no puede exceder 50 caracteres")
     private String rol;
 }

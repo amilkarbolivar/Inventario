@@ -32,7 +32,7 @@ public class UserPrincipal implements UserDetails {
                 administrador.getPassword(),
                 administrador.getRol(),
                 administrador.getActivo(),
-                administrador.getSupermercado().getId()
+                administrador.getSupermercado() != null ? administrador.getSupermercado().getId() : null
         );
     }
 

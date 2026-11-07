@@ -44,7 +44,8 @@ public class SupermercadoService {
         admin.setNombre(dto.getAdministrador().getNombre());
         admin.setCorreo(dto.getAdministrador().getCorreo());
         admin.setPassword(passwordEncoder.encode(dto.getAdministrador().getPassword()));
-        admin.setRol("ROLE_SUPERADMIN");
+        String rol = dto.getAdministrador().getRol();
+        admin.setRol((rol == null || rol.isBlank()) ? "ROLE_SUPERADMIN" : rol);
         admin.setSupermercado(savedSupermercado); // ← aquí le asignas el supermercado recién creado
         administradorRepository.save(admin);
 

@@ -22,8 +22,8 @@ public class AuthService {
     private final AdministradorMapper mapper;
 
     public AuthResponseDTO login(LoginDTO loginDTO) {
-        // Buscar administrador por correo y supermercado
-        Administrador administrador = administradorRepository.findByCorreoAndPassword(loginDTO.getCorreo(), loginDTO.getPassword())
+        // Buscar administrador por correo
+        Administrador administrador = administradorRepository.findByCorreo(loginDTO.getCorreo())
                 .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
 
         // Verificar que esté activo
@@ -31,7 +31,7 @@ public class AuthService {
             throw new UnauthorizedException("Cuenta desactivada");
         }
 
-        // Autenticar
+        // Autenticar (verifica la contraseña con BCrypt)
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDTO.getCorreo(),
